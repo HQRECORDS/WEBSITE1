@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HQ Records</title>
+<meta name="description" content="HQ Records — a record label.">
+<style>
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #ffffff;
+    color: #111111;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 6vh 5vw;
+  }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .logo {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    display: block;
+  }
+
+  .tagline {
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #111111;
+  }
+
+  @media (max-width: 420px) {
+    .logo {
+      max-width: 260px;
+    }
+    .tagline {
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img class="logo" src="logo.jpg" alt="HQ Records logo">
+    <div class="tagline">a record label</div>
+  </div>
+</body>
+</html>
