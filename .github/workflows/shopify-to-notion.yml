@@ -1,0 +1,49 @@
+name: Shopify to Notion
+
+# Copies Shopify orders, sizes, web customer regions and stock into the Notion
+# Merch Inventory System. Replaces the weekly Claude scheduled task, so it uses
+# no Claude usage. Runs every 2 hours, and on demand from the Actions tab
+# ("Run workflow"), where you can also backfill from a date or do a dry run.
+
+on:
+  schedule:
+    - cron: '41 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      sync_from:
+        description: 'Backfill from this date (YYYY-MM-DD). Leave blank for the last 14 days.'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run: read everything, write nothing to Notion'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shopify-to-notion
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Copy Shopify into Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+          SYNC_FROM: ${{ inputs.sync_from }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+        run: node scripts/shopify-to-notion.mjs

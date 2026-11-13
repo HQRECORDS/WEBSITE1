@@ -1,12 +1,16 @@
 name: JM merch data
 
 # Refreshes the merch dashboard's Notion snapshots in jmmerch-dashboard/data/.
-# Runs every 3 hours, and on demand from the Actions tab ("Run workflow").
+# Runs every 3 hours, right after each Shopify to Notion sync, and on demand
+# from the Actions tab ("Run workflow").
 
 on:
   schedule:
     - cron: '17 */3 * * *'
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Shopify to Notion']
+    types: [completed]
 
 permissions:
   contents: write
