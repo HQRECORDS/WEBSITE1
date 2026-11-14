@@ -2,6 +2,7 @@
 <style data-src="page-css-1.css page-css-2.css"></style>
 
 <div class="jm-wrap">
+<div class="jm-grit" aria-hidden="true"></div>
 <div class="jm-layout">
 <aside class="jm-side" aria-label="Dashboard sections">
   <ul class="jm-nav">
@@ -15,7 +16,7 @@
 <div class="jm">
   <header class="jm-head" id="top">
     <div class="jm-titlerow">
-      <h1>John Muirhead Merch</h1>
+      <h1 class="jm-brand"><span class="jm-wordmark" role="img" aria-label="John Muirhead"></span><span class="jm-brand-sub">Merch</span></h1>
       <div class="jm-sync">
         <span>Shopify data as of <b data-draw="synced" data-source="summary" data-field="value" data-where="metric=last_synced">—</b></span>
         <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About the data" aria-describedby="i-sync">i</button><span role="tooltip" id="i-sync" class="jm-info-tip right"><b>How data gets here</b><br>Shopify → Notion syncs automatically every 2 hours on GitHub (the "Shopify to Notion" workflow), and the dashboard data refreshes right after. To sync sooner, open <b>Actions</b> in the WEBSITE1 repo on GitHub, pick "Shopify to Notion" and choose <b>Run workflow</b>.<br><br><b>Reload</b> picks up the newest numbers after a sync.<br><br>All money is in Canadian dollars. Data loaded <span data-draw="loaded-at">—</span>.</span></span>

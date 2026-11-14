@@ -118,3 +118,8 @@
   .jm-nav a { white-space: nowrap; }
   .jm-navgroup, .jm-navsep { display: none; }
 }
+
+/* The Nomad paper grit: a dark card scan laid over everything at Screen, 100% (brand guidelines). */
+.jm-grit { position: fixed; inset: 0; background: url(brand/paper-grit.jpg) center / cover no-repeat; mix-blend-mode: screen; pointer-events: none; z-index: 1000; }
+.jm-pindiv, .jm-ts-pack summary { font-family: var(--font-nomad-accent); letter-spacing: .06em; }
+@container (max-width: 560px) { .jm-wordmark { width: 200px; } .jm-brand-sub { font-size: 16px; } }
