@@ -19,7 +19,8 @@
 //   SYNC_FROM               (optional) YYYY-MM-DD to backfill from; default: 14 days ago
 //   DRY_RUN                 (optional) "1" = read everything, write nothing, print counts
 
-const env = (k) => (process.env[k] || '').trim();
+// Trim spaces, invisible characters and any straight or curly quotes picked up when copying a value into GitHub.
+const env = (k) => (process.env[k] || '').replace(/[​-‍﻿]/g, '').trim().replace(/^["'`‘’“”]+|["'`‘’“”]+$/g, '').trim();
 const NOTION_TOKEN = env('NOTION_TOKEN');
 const STORE = env('SHOPIFY_STORE').replace(/^https?:\/\//, '').replace(/\/$/, '');
 const DRY = env('DRY_RUN') === '1' || env('DRY_RUN') === 'true';
@@ -113,12 +114,20 @@ async function upsert(ds, existing, key, props, compareKeys) {
 let TOKEN = env('SHOPIFY_ADMIN_TOKEN');
 async function shopifyToken() {
   if (TOKEN) return TOKEN;
-  const res = await fetch(`https://${STORE}/admin/oauth/access_token`, {
-    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ grant_type: 'client_credentials', client_id: env('SHOPIFY_CLIENT_ID'), client_secret: env('SHOPIFY_CLIENT_SECRET') }),
-  });
-  const j = await res.json().catch(() => ({}));
-  if (!res.ok || !j.access_token) throw new Error('Shopify token request failed: ' + res.status);
+  // A Client ID is letters and numbers only, so anything else picked up when copying is dropped.
+  const creds = { grant_type: 'client_credentials', client_id: env('SHOPIFY_CLIENT_ID').replace(/[^A-Za-z0-9]/g, ''), client_secret: env('SHOPIFY_CLIENT_SECRET') };
+  const url = `https://${STORE}/admin/oauth/access_token`;
+  // Shopify accepts the request as a form or as JSON; try the form first, then JSON.
+  let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams(creds) });
+  let j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.access_token) {
+    res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(creds) });
+    j = await res.json().catch(() => ({}));
+  }
+  if (!res.ok || !j.access_token) {
+    const why = [j.error, j.error_description, j.errors && JSON.stringify(j.errors)].filter(Boolean).join(': ') || 'no reason given';
+    throw new Error(`Shopify login failed (${res.status}): ${why}. Check SHOPIFY_STORE, SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET (id length ${creds.client_id.length}, secret length ${creds.client_secret.length}).`);
+  }
   TOKEN = j.access_token; return TOKEN;
 }
 async function gql(query, variables) {
