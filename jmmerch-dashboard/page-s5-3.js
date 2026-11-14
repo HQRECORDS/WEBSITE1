@@ -191,7 +191,7 @@ dash.draw('sizes-table', (el) => {
       const r = g.cells.get(z); const td = document.createElement('td'); const c = document.createElement('span'); c.className = 'c';
       if (r) {
         c.textContent = S.sizeShow === 'pct' ? Math.round(r.pct) + '%' : String(r.units);
-        c.style.background = 'color-mix(in srgb, ' + dash.colors[0] + ' ' + Math.min(70, Math.round(r.pct * 1.6)) + '%, transparent)';
+        c.style.background = 'color-mix(in srgb, ' + dash.colors[2] + ' ' + Math.min(70, Math.round(r.pct * 1.6)) + '%, transparent)';
         c.setAttribute('data-source', 'size_mix'); c.setAttribute('data-field', S.sizeShow === 'pct' ? 'pct' : 'units'); c.setAttribute('data-where', 'key=' + encodeURIComponent(r.key));
         c.addEventListener('mousemove', (ev) => tip.show(ev, [g.group + ' · ' + z, (g.cls === 'road' ? 'Carrying ' : 'Sold ') + r.units + ' of ' + r.total + ' (' + r.pct + '%)']));
         c.addEventListener('mouseleave', () => tip.hide());

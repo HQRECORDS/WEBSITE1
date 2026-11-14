@@ -170,7 +170,8 @@
       if (spec === undefined) { if (started) drawAll(name); return; }
       draws[name] = typeof spec === 'function' ? { fn: spec } : spec;
     },
-    colors: ['#3b6fd8', '#d9822b', '#2a9d8f', '#c2459b', '#7a5bd6', '#8a9a2b', '#d1495b', '#4a90a4'],
+    // Chart colors follow the page theme (set as --chart-1 … --chart-6 in index.html).
+    colors: ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)', 'var(--chart-6)'],
     refresh(id) { if (DATASETS.includes(id)) load(id); },
     setLink(name) { try { history.pushState(null, '', '#' + name); } catch (e) { location.hash = name; } },
     params() { return Object.assign({}, params); },

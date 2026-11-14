@@ -6,18 +6,34 @@
 <meta name="robots" content="noindex, nofollow">
 <title>John Muirhead Merch</title>
 <style>
+/* John Muirhead · The Nomad (design system "John Muirhead — The Nomad").
+   Beige theme is the default; Brown is the dark flip. */
 :root {
-  --font-anthropic-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-  --font-anthropic-serif: Georgia, "Times New Roman", serif;
-  --color-bg: #faf9f6;
-  --color-panel: #f0eee8;
-  --color-fg: #1f1e1b;
-  --color-fg-muted: #6b6860;
-  --color-border-line: #e2dfd7;
-  --color-accent: #3b6fd8;
-  --color-ok: #2e8b57;
-  --color-warn: #c98a12;
-  --color-bad: #c8423a;
+  --font-anthropic-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-anthropic-serif: "Span Compressed", Georgia, "Times New Roman", serif;
+  --font-nomad-accent: "Acme Gothic Condensed", "Oswald", "Arial Narrow", sans-serif;
+  --nomad-beige: #dfd6bb;
+  --nomad-brown: #221a06;
+  --nomad-cardboard: #c19b6f;
+  --nomad-pickup-blue: #b1d0d1;
+  --nomad-pond-green: #02381e;
+  --nomad-chestnut: #604920;
+  --nomad-rust: #8f3418;
+  --color-bg: #dfd6bb;
+  --color-panel: #e8e1ca;
+  --color-fg: #221a06;
+  --color-fg-muted: #5a4d2f;
+  --color-border-line: #c5b993;
+  --color-accent: #604920;
+  --color-ok: #02381e;
+  --color-warn: #7a5410;
+  --color-bad: #8f3418;
+  --chart-1: #02381e;
+  --chart-2: #604920;
+  --chart-3: #c19b6f;
+  --chart-4: #6f9798;
+  --chart-5: #8f3418;
+  --chart-6: #9a8b62;
   --cds-font-size-caption: 12px;
   --cds-font-size-body: 14px;
   --cds-font-size-title: 22px;
@@ -29,39 +45,48 @@
   --cds-gap-xl: 28px;
   --cds-pad-md: 12px;
   --cds-pad-lg: 20px;
-  --cds-border: #e2dfd7;
-  --cds-text-secondary: #6b6860;
-  --cds-surface-popover: #ffffff;
-  --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, .12);
-  --cds-chart-axis: #8d897f;
-  --cds-chart-grid: #e8e5de;
-  --cds-chart-muted: #b9b5ab;
+  --cds-border: #c5b993;
+  --cds-text-secondary: #5a4d2f;
+  --cds-surface-popover: #ece6d4;
+  --cds-shadow-popover: 0 4px 16px rgba(34, 26, 6, .18);
+  --cds-chart-axis: #7d7050;
+  --cds-chart-grid: #cdc2a0;
+  --cds-chart-muted: #a89a74;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg: #1c1b19;
-    --color-panel: #2a2926;
-    --color-fg: #ecebe6;
-    --color-fg-muted: #a19d94;
-    --color-border-line: #3a3834;
-    --color-ok: #4cb37a;
-    --color-warn: #e0a83a;
-    --color-bad: #e06a60;
-    --cds-border: #3a3834;
-    --cds-text-secondary: #a19d94;
-    --cds-surface-popover: #2a2926;
+    --color-bg: #221a06;
+    --color-panel: #2e2510;
+    --color-fg: #dfd6bb;
+    --color-fg-muted: #a99c7b;
+    --color-border-line: #4a3d1f;
+    --color-accent: #c19b6f;
+    --color-ok: #8fb98a;
+    --color-warn: #d4aa72;
+    --color-bad: #e08a65;
+    --chart-1: #b1d0d1;
+    --chart-2: #c19b6f;
+    --chart-3: #8a6a3c;
+    --chart-4: #8fb98a;
+    --chart-5: #e08a65;
+    --chart-6: #a99c7b;
+    --cds-border: #4a3d1f;
+    --cds-text-secondary: #a99c7b;
+    --cds-surface-popover: #2e2510;
     --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, .5);
-    --cds-chart-axis: #8d897f;
-    --cds-chart-grid: #34322e;
-    --cds-chart-muted: #5c5952;
+    --cds-chart-axis: #8f8262;
+    --cds-chart-grid: #3a2f16;
+    --cds-chart-muted: #6b5d3c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --color-bg: #1c1b19; --color-panel: #2a2926; --color-fg: #ecebe6; --color-fg-muted: #a19d94; --color-border-line: #3a3834;
-  --color-ok: #4cb37a; --color-warn: #e0a83a; --color-bad: #e06a60; --cds-border: #3a3834; --cds-text-secondary: #a19d94;
-  --cds-surface-popover: #2a2926; --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, .5); --cds-chart-grid: #34322e; --cds-chart-muted: #5c5952;
+  --color-bg: #221a06; --color-panel: #2e2510; --color-fg: #dfd6bb; --color-fg-muted: #a99c7b; --color-border-line: #4a3d1f; --color-accent: #c19b6f;
+  --color-ok: #8fb98a; --color-warn: #d4aa72; --color-bad: #e08a65;
+  --chart-1: #b1d0d1; --chart-2: #c19b6f; --chart-3: #8a6a3c; --chart-4: #8fb98a; --chart-5: #e08a65; --chart-6: #a99c7b;
+  --cds-border: #4a3d1f; --cds-text-secondary: #a99c7b; --cds-surface-popover: #2e2510; --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, .5);
+  --cds-chart-axis: #8f8262; --cds-chart-grid: #3a2f16; --cds-chart-muted: #6b5d3c;
   color-scheme: dark;
 }
 html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-body); line-height: 1.45; }
@@ -69,8 +94,11 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 .dash-select { font: inherit; color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 5px 8px; }
 .dash-boot { color: var(--color-fg-muted); padding: 40px 0; text-align: center; }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="runtime.js?v=2" defer></script>
+<script src="runtime.js?v=3" defer></script>
 </head>
 <body>
 <div id="dash-root"><p class="dash-boot">Loading dashboard…</p></div>
