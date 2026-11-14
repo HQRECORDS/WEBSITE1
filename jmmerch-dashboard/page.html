@@ -18,7 +18,7 @@
       <h1>John Muirhead Merch</h1>
       <div class="jm-sync">
         <span>Shopify data as of <b data-draw="synced" data-source="summary" data-field="value" data-where="metric=last_synced">—</b></span>
-        <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About the data" aria-describedby="i-sync">i</button><span role="tooltip" id="i-sync" class="jm-info-tip right"><b>How data gets here</b><br>Shopify → Notion happens in the sync: automatically every Saturday at about 7:30 AM Eastern, or any time from <b>Scheduled tasks</b> in the Claude app (open "JM Merch – Weekly Shopify Sync" and choose <b>Run now</b>).<br><br><b>Reload</b> re-reads Notion, so you see the newest numbers after a sync.<br><br>All money is in Canadian dollars. Data loaded <span data-draw="loaded-at">—</span>.</span></span>
+        <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About the data" aria-describedby="i-sync">i</button><span role="tooltip" id="i-sync" class="jm-info-tip right"><b>How data gets here</b><br>Shopify → Notion syncs automatically every 2 hours on GitHub (the "Shopify to Notion" workflow), and the dashboard data refreshes right after. To sync sooner, open <b>Actions</b> in the WEBSITE1 repo on GitHub, pick "Shopify to Notion" and choose <b>Run workflow</b>.<br><br><b>Reload</b> picks up the newest numbers after a sync.<br><br>All money is in Canadian dollars. Data loaded <span data-draw="loaded-at">—</span>.</span></span>
         <a class="jm-issues-chip" href="#issues" data-target="issues"><span aria-hidden="true">⚠️</span> <span data-draw="nav-issues" data-source="summary" data-field="value" data-where="metric=high_issues">—</span> data issues</a>
         <button type="button" class="jm-btn" id="refresh-btn" aria-label="Reload all numbers from Notion"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Reload</button>
       </div>
@@ -169,7 +169,7 @@
 
   <section class="jm-section jm-page" id="issues" hidden>
     <h2 class="jm-h"><span class="jm-emoji" aria-hidden="true">⚠️</span>Data issues
-      <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About data issues" aria-describedby="i-issues">i</button><span role="tooltip" id="i-issues" class="jm-info-tip">Problems logged by the weekly sync and by Claude, held for cleanup in the Notion Data Issues list.<br><br>High-severity issues can make the forecasts above wrong.</span></span>
+      <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About data issues" aria-describedby="i-issues">i</button><span role="tooltip" id="i-issues" class="jm-info-tip">Problems logged by the Shopify sync and by Claude, held for cleanup in the Notion Data Issues list.<br><br>High-severity issues can make the forecasts above wrong.</span></span>
     </h2>
     <div class="jm-tablewrap">
       <table class="jm-table" data-source="issues" data-row-key="id">
@@ -188,7 +188,7 @@
 
   <details class="jm-method" id="method">
     <summary>How these numbers are worked out</summary>
-    <p>All data comes from the Notion Merch Inventory System: Products, Shows, Sales and Data Issues. Shopify stock and orders reach Notion through the weekly sync; show dates, capacities and tickets come read-only from John's calendar.</p>
+    <p>All data comes from the Notion Merch Inventory System: Products, Shows, Sales and Data Issues. Shopify stock and orders reach Notion through the Shopify sync, which runs every 2 hours; show dates, capacities and tickets come read-only from John's calendar.</p>
     <p>Units per 100 tickets uses each product's last 10 played shows that had point-of-sale sales and a ticket count, starting from the first show where that product sold. Refunds are subtracted.</p>
     <p>Road run-out walks forward through every confirmed show in the next 180 days, adding each show's forecast, and names the first show where the total passes road stock. Web run-out assumes the last 8 weeks' pace continues.</p>
     <p>Sales in other currencies are converted to Canadian dollars by Shopify at the time of sale. Bundles and discontinued products are left out of the forecasts.</p>
