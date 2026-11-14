@@ -6,8 +6,9 @@
  * runtime, so this file provides the same `dash` API, reading snapshots in
  * data/<id>.json that the "JM merch data" GitHub Action refreshes from Notion.
  *
- * page.html is the dashboard's index.html copied from the claude.ai artifact,
- * unchanged. To pick up a new version of the dashboard, replace page.html.
+ * page.html and the page-*.css / page-*.js parts are the dashboard's
+ * index.html from the claude.ai artifact, split by scripts/split-page.py so
+ * each update only changes the parts that changed. This file joins them back.
  */
 (function () {
   'use strict';
@@ -181,17 +182,21 @@
 
   async function boot() {
     const root = document.getElementById('dash-root');
-    const res = await fetch('page.html?t=' + Date.now(), { cache: 'no-store' });
-    const html = await res.text();
+    const bust = '?t=' + Date.now();
+    const get = async (f) => { const r = await fetch(f + bust, { cache: 'no-store' }); if (!r.ok) throw new Error(f + ' ' + r.status); return r.text(); };
+    // page.html may point at its styles and scripts in parts (data-src="a.js b.js"); join them in order.
+    const joined = (el) => Promise.all(el.getAttribute('data-src').split(/\s+/).filter(Boolean).map(get)).then((xs) => xs.join(''));
     const tpl = document.createElement('template');
-    tpl.innerHTML = html;
+    tpl.innerHTML = await get('page.html');
+    for (const st of tpl.content.querySelectorAll('style[data-src]')) { st.textContent = await joined(st); st.removeAttribute('data-src'); }
     const scripts = [...tpl.content.querySelectorAll('script')];
+    const code = await Promise.all(scripts.map((s) => (s.hasAttribute('data-src') ? joined(s) : s.textContent)));
     scripts.forEach((s) => s.remove());
     tpl.content.querySelectorAll('meta').forEach((m) => m.remove());
     root.replaceChildren(tpl.content);
-    for (const s of scripts) {
+    for (const c of code) {
       const el = document.createElement('script');
-      el.textContent = '(function(){\n' + s.textContent + '\n})();';
+      el.textContent = '(function(){\n' + c + '\n})();';
       document.body.appendChild(el);
     }
     started = true;
