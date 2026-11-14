@@ -39,7 +39,18 @@ dash.loader('shows', { description: 'Reads every page of the Shows view and keep
   }
   const un = (s) => s == null ? '' : String(s).replace(/\\([\\`*_{}\[\]()#+\-.!|$<>~])/g, '$1');
   const num = (v) => (v === null || v === undefined || v === '' || (typeof v === 'string' && /^(formula|rollup)/.test(v))) ? null : Number(v);
-  return all.map((r) => ({
+  // If a calendar date was added to Notion twice (same Calendar Key), count it once:
+  // keep the row that has sales linked, otherwise the first one.
+  const hasSales = (r) => { const v = r['Sales']; return !!v && v !== '[]'; };
+  const byKey = new Map(); const rows = [];
+  for (const r of all) {
+    const k = un(r['Calendar Key']).trim();
+    if (!k) { rows.push(r); continue; }
+    const seen = byKey.get(k);
+    if (seen === undefined) { byKey.set(k, rows.length); rows.push(r); }
+    else if (!hasSales(rows[seen]) && hasSales(r)) rows[seen] = r;
+  }
+  return rows.map((r) => ({
     id: (String(r.url || '').match(/[0-9a-f]{32}/g) || []).pop() || null,
     show: un(r['Show']),
     date: r['date:Date:start'] || null,
