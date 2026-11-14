@@ -172,7 +172,7 @@ dash.draw('sizes-table', (el) => {
   const d = dash.data('size_mix');
   if (d.status !== 'ok') { jm.placeholder(el, ['size_mix']); return; }
   const rows = d.data.filter((r) => r.product === S.sizeProduct);
-  if (!rows.some((r) => r.type === 'all')) { emptyBox(el, 'No sizes recorded yet. Sizes sold per show start filling in at the next Shopify sync (Saturdays at about 7:30 AM Eastern, or run it now from Scheduled tasks in the Claude app).'); return; }
+  if (!rows.some((r) => r.type === 'all')) { emptyBox(el, 'No sizes recorded yet. Sizes sold per show start filling in at the next Shopify sync. It runs every 2 hours on GitHub ("Shopify to Notion" workflow), and the dashboard refreshes right after.'); return; }
   const sizes = SIZE_ORDER.filter((z) => rows.some((r) => r.size === z));
   const groupsOf = (type) => { const m = new Map(); for (const r of rows.filter((x) => x.type === type)) { const g = m.get(r.group) || { group: r.group, total: r.total, date: r.date, cells: new Map() }; g.cells.set(r.size, r); m.set(r.group, g); } return [...m.values()]; };
   const main = groupsOf(S.sizeGroup); if (S.sizeGroup === 'show') main.sort((a, b) => (a.date < b.date ? 1 : -1)); else main.sort((a, b) => b.total - a.total);
@@ -262,7 +262,7 @@ dash.draw('geo-takeaway', (el) => {
 });
 dash.draw('geo-chart', (el) => {
   const rows = geoRows(); if (!rows) { jm.placeholder(el, ['geo']); return; }
-  if (!rows.length) { emptyBox(el, 'No web customer locations recorded yet. They start filling in at the next Shopify sync (Saturdays at about 7:30 AM Eastern, or run it now from Scheduled tasks in the Claude app).'); return; }
+  if (!rows.length) { emptyBox(el, 'No web customer locations recorded yet. They start filling in at the next Shopify sync. It runs every 2 hours on GitHub ("Shopify to Notion" workflow), and the dashboard refreshes right after.'); return; }
   const m = S.geoMeasure; const fmt = m === 'gross' ? jm.money : jm.int;
   const list = rows.slice().sort((a, b) => b[m] - a[m]); const shown = list.slice(0, 15);
   el.replaceChildren();
