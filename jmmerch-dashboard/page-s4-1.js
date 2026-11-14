@@ -98,3 +98,27 @@ document.querySelectorAll('[data-target]').forEach((a) => a.addEventListener('cl
 window.addEventListener('hashchange', () => showPage((location.hash || '').slice(1), false));
 showPage((location.hash || '').slice(1), false);
 window.jmShowPage = showPage;
+
+// Light/Dark switch: flips the page theme and remembers the choice in this browser.
+(function () {
+  const btn = document.getElementById('theme-btn');
+  if (!btn) return;
+  const root = document.documentElement;
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  const current = () => root.getAttribute('data-theme') || (mq.matches ? 'dark' : 'light');
+  const paint = () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    btn.querySelector('span').textContent = next === 'dark' ? 'Dark' : 'Light';
+    btn.querySelector('.i-moon').hidden = next !== 'dark';
+    btn.querySelector('.i-sun').hidden = next === 'dark';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  };
+  btn.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('jm-theme', next); } catch (e) { /* private window: switch still works for this visit */ }
+    paint();
+  });
+  if (mq.addEventListener) mq.addEventListener('change', paint);
+  paint();
+})();
