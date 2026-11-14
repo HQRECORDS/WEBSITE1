@@ -94,6 +94,10 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 .dash-select { font: inherit; color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 5px 8px; }
 .dash-boot { color: var(--color-fg-muted); padding: 40px 0; text-align: center; }
 </style>
+<script>
+// Light/Dark choice from the dashboard's switch, applied before the page draws. No choice = follow the device.
+try { var t = localStorage.getItem('jm-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap">

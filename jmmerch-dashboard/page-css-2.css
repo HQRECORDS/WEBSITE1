@@ -123,3 +123,5 @@
 .jm-grit { position: fixed; inset: 0; background: url(brand/paper-grit.jpg) center / cover no-repeat; mix-blend-mode: screen; pointer-events: none; z-index: 1000; }
 .jm-pindiv, .jm-ts-pack summary { font-family: var(--font-nomad-accent); letter-spacing: .06em; }
 @container (max-width: 560px) { .jm-wordmark { width: 200px; } .jm-brand-sub { font-size: 16px; } }
+.jm-btn svg[hidden] { display: none; }
+.jm-sync { flex-wrap: wrap; }
