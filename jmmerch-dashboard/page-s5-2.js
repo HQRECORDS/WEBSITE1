@@ -40,19 +40,51 @@ dash.draw('ov-cards', (el) => {
   const fmt = d3.utcFormat('%a %b %-d');
   const label = { short: 'Running short', tight: 'Tight', ok: 'Enough' }, cls = { short: 'bad', tight: 'warn', ok: 'ok' };
   const mk = (tag, c, text) => { const e = document.createElement(tag); if (c) e.className = c; if (text != null) e.textContent = text; return e; };
-  el.replaceChildren(...d.data.filter((r) => r.range === 'tour').map((r) => {
-    const a = mk('a', 'jm-ov-card ' + cls[r.status]); a.href = '#road';
-    a.addEventListener('click', (ev) => { ev.preventDefault(); if (window.jmShowPage) window.jmShowPage('road', true); });
-    const top = mk('div', 'ov-top'); top.append(mk('span', 'ov-name', r.product), mk('span', 'ts-pill ' + cls[r.status], label[r.status]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const svgEl = (tag, attrs) => { const e = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+  // Half-circle dial: share of what the booked shows need that is covered (size by size), full sweep = enough.
+  const dial = (r, tone) => {
+    const R = 78, cx = 100, cy = 92, need = Math.max(0, r.need || 0), have = Math.max(0, r.on_hand || 0);
+    const frac = need > 0 ? Math.max(0, Math.min(1, (need - Math.max(0, r.short || 0)) / need)) : 1;
+    const pt = (f, rad) => { const a = Math.PI * (1 - f); return [cx + rad * Math.cos(a), cy - rad * Math.sin(a)]; };
+    const arc = (f0, f1) => { const [x0, y0] = pt(f0, R), [x1, y1] = pt(f1, R); return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+    const svg = svgEl('svg', { viewBox: '0 0 200 104', class: 'ov-dial', role: 'img', 'aria-label': `${jm.int(have)} on hand of ${jm.int(need)} needed` });
+    for (let i = 0; i <= 10; i++) { const [x0, y0] = pt(i / 10, R - 14), [x1, y1] = pt(i / 10, R - (i % 5 ? 18 : 22)); svg.appendChild(svgEl('line', { x1: x0.toFixed(2), y1: y0.toFixed(2), x2: x1.toFixed(2), y2: y1.toFixed(2), class: 'ov-tick' })); }
+    svg.appendChild(svgEl('path', { d: arc(0, 1), class: 'ov-track' }));
+    if (frac > 0.004) svg.appendChild(svgEl('path', { d: arc(0, frac), class: 'ov-fill ' + tone }));
+    const [nx, ny] = pt(frac, R - 26);
+    svg.appendChild(svgEl('line', { x1: cx, y1: cy, x2: nx.toFixed(2), y2: ny.toFixed(2), class: 'ov-needle' }));
+    svg.appendChild(svgEl('circle', { cx, cy, r: 5.5, class: 'ov-hub' }));
+    return svg;
+  };
+  const rows = pinFirst(d.data.filter((r) => r.range === 'tour'), (r) => r.product);
+  el.replaceChildren(...rows.map((r) => {
+    const tone = cls[r.status], pinned = isPinned(r.product);
+    const card = mk('div', 'jm-ov-card ' + tone + (pinned ? ' pinned' : ''));
+    const go = () => { if (window.jmShowPage) window.jmShowPage('road', true); };
+    card.addEventListener('click', go);
+    const top = mk('div', 'ov-top');
+    const name = mk('a', 'ov-name', r.product); name.href = '#road';
+    name.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); go(); });
+    const pin = mk('button', 'ov-pin'); pin.type = 'button';
+    pin.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+    pin.setAttribute('aria-label', (pinned ? 'Unpin ' : 'Pin ') + r.product + (pinned ? '' : ' as on the current tour'));
+    pin.title = pinned ? 'Pinned: on the current tour' : 'Pin: on the current tour';
+    pin.appendChild(mk('span', 'jm-ico ico-pin'));
+    pin.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); togglePin(r.product); });
+    top.append(name, pin);
+    const pill = mk('span', 'ts-pill ' + tone, label[r.status]);
     const big = mk('div', 'ov-big'); const b = mk('b', null, jm.int(r.short > 0 ? r.short : r.spare));
     b.setAttribute('data-source', 'tour_need'); b.setAttribute('data-field', r.short > 0 ? 'short' : 'spare'); b.setAttribute('data-where', 'key=' + encodeURIComponent(r.key));
     big.append(b, mk('small', null, r.short > 0 ? 'short' : 'spare'));
+    const cap = mk('p', 'ov-cap', jm.int(r.on_hand) + ' on hand · ' + jm.int(r.need) + ' needed');
     let line;
     if (r.first_out_city === 'now') line = r.first_out_sizes ? r.first_out_sizes + ' already out' : 'None on tour now';
     else if (r.first_out_date) line = (r.first_out_sizes ? r.first_out_sizes + ' runs out' : 'Runs out') + ' at ' + r.first_out_city + ' · ' + fmt(new Date(r.first_out_date + 'T00:00:00Z'));
     else line = r.need > 0 ? 'Lasts the booked shows' : 'No sales expected';
-    a.append(top, big, mk('p', 'ov-when', line));
-    return a;
+    const mid = mk('div', 'ov-mid'); mid.append(dial(r, tone), big);
+    card.append(top, pill, mid, cap, mk('p', 'ov-when', line));
+    return card;
   }));
 });
 

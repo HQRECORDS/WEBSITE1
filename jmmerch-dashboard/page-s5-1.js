@@ -3,7 +3,7 @@ const S = window.jmState;
 if (S.tsRange !== 'd14' && S.tsRange !== 'tour') S.tsRange = 'tour';
 // ---------- Pins: checked products sit at the top of every inventory view (saved in this browser) ----------
 const PIN_KEY = 'jm-pinned-products';
-const PIN_DRAWS = ['tour-gauges', 'road-multiples', 'road-grid', 'stock-list'];
+const PIN_DRAWS = ['ov-cards', 'tour-gauges', 'road-multiples', 'road-grid', 'stock-list'];
 const pinSet = () => { if (!window.jmPins) { let a = []; try { a = JSON.parse(localStorage.getItem(PIN_KEY) || '[]'); } catch (e) { a = []; } window.jmPins = new Set(Array.isArray(a) ? a : []); } return window.jmPins; };
 const isPinned = (p) => pinSet().has(p);
 const pinFirst = (arr, nameOf) => { const P = pinSet(); return arr.filter((x) => P.has(nameOf(x))).concat(arr.filter((x) => !P.has(nameOf(x)))); };
@@ -14,6 +14,7 @@ const pinBox = (product) => {
   cb.addEventListener('change', () => { const P = pinSet(); if (cb.checked) P.add(product); else P.delete(product); try { localStorage.setItem(PIN_KEY, JSON.stringify([...P])); } catch (e) { /* kept for this visit only */ } PIN_DRAWS.forEach((n) => dash.draw(n)); });
   lab.appendChild(cb); return lab;
 };
+const togglePin = (product) => { const P = pinSet(); if (P.has(product)) P.delete(product); else P.add(product); try { localStorage.setItem(PIN_KEY, JSON.stringify([...P])); } catch (e) { /* kept for this visit only */ } PIN_DRAWS.forEach((n) => dash.draw(n)); };
 const pinDivider = (cls) => { const d = document.createElement('div'); d.className = 'jm-pindiv ' + (cls || ''); d.textContent = 'Not pinned'; return d; };
 
 // ---------- Overview: on tour now ----------
