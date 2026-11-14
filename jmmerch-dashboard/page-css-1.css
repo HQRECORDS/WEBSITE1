@@ -57,7 +57,6 @@ a.jm-tile:hover { border-color: var(--color-fg-muted); }
 .jm-card-left { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .jm-pindiv { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); margin: 6px 0 -2px; }
 .jm-pindiv::after { content: ""; flex: 1; height: 1px; background: var(--color-border-line); }
-.jm-stockrow.pinned .p::before, .jm-card.pinned .p::before { content: "📌 "; }
 .jm-quotes { display: flex; flex-direction: column; gap: 14px; }
 .jm-qcard { border: 1px solid var(--color-border-line); border-radius: 14px; padding: 14px 16px; background: var(--color-bg); }
 .jm-qhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 10px; }
@@ -270,13 +269,11 @@ a.jm-tile:hover { border-color: var(--color-fg-muted); }
 .jm-resize { position: absolute; top: 0; right: -3px; width: 7px; height: 100%; cursor: col-resize; z-index: 2; }
 .jm-resize::after { content: ""; position: absolute; top: 20%; bottom: 20%; left: 3px; width: 1px; background: var(--color-border-line); }
 .jm-resize:hover::after, .jm-resize.is-on::after { background: var(--color-fg-muted); width: 2px; }
-.jm-emoji { display: inline-block; text-decoration: none; margin-right: 8px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .jm-nav a { justify-content: flex-start; }
 .jm-nav a .jm-badge { margin-left: auto; }
 .jm-navgroup { padding: 14px 10px 4px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); }
 .jm-navsep { height: 1px; background: var(--color-border-line); margin: 10px 8px 6px; }
 .jm-nav a[data-target="overview"] { font-weight: 700; letter-spacing: .04em; }
-.jm-nav .jm-emoji { margin-right: 8px; width: 1.2em; text-align: center; }
 .jm-grid { table-layout: fixed; }
 .jm-grid col.c-show { width: var(--show-col, 76px); }
 .jm-grid thead th .city { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
