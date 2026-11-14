@@ -6,10 +6,10 @@
 <div class="jm-layout">
 <aside class="jm-side" aria-label="Dashboard sections">
   <ul class="jm-nav">
-    <li><a href="#overview" data-target="overview"><span class="jm-emoji" aria-hidden="true">🏠</span>OVERVIEW</a></li>
-    <li><a href="#road" data-target="road"><span class="jm-emoji" aria-hidden="true">🚐</span>Tour stock</a></li>
-    <li><a href="#profit" data-target="profit"><span class="jm-emoji" aria-hidden="true">💰</span>Money</a></li>
-    <li><a href="#markets" data-target="markets"><span class="jm-emoji" aria-hidden="true">🎟️</span>Fans</a></li>
+    <li><a href="#overview" data-target="overview"><span class="jm-ico ico-compass" aria-hidden="true"></span>OVERVIEW</a></li>
+    <li><a href="#road" data-target="road"><span class="jm-ico ico-truck" aria-hidden="true"></span>Tour stock</a></li>
+    <li><a href="#profit" data-target="profit"><span class="jm-ico ico-banknote" aria-hidden="true"></span>Money</a></li>
+    <li><a href="#markets" data-target="markets"><span class="jm-ico ico-ticket" aria-hidden="true"></span>Fans</a></li>
   </ul>
 </aside>
 
@@ -20,7 +20,7 @@
       <div class="jm-sync">
         <span>Shopify data as of <b data-draw="synced" data-source="summary" data-field="value" data-where="metric=last_synced">—</b></span>
         <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About the data" aria-describedby="i-sync">i</button><span role="tooltip" id="i-sync" class="jm-info-tip right"><b>How data gets here</b><br>Shopify → Notion syncs automatically every 2 hours on GitHub (the "Shopify to Notion" workflow), and the dashboard data refreshes right after. To sync sooner, open <b>Actions</b> in the WEBSITE1 repo on GitHub, pick "Shopify to Notion" and choose <b>Run workflow</b>.<br><br><b>Reload</b> picks up the newest numbers after a sync.<br><br>All money is in Canadian dollars. Data loaded <span data-draw="loaded-at">—</span>.</span></span>
-        <a class="jm-issues-chip" href="#issues" data-target="issues"><span aria-hidden="true">⚠️</span> <span data-draw="nav-issues" data-source="summary" data-field="value" data-where="metric=high_issues">—</span> data issues</a>
+        <a class="jm-issues-chip" href="#issues" data-target="issues"><span class="jm-ico ico-warning" aria-hidden="true"></span> <span data-draw="nav-issues" data-source="summary" data-field="value" data-where="metric=high_issues">—</span> data issues</a>
         <button type="button" class="jm-btn" id="refresh-btn" aria-label="Reload all numbers from Notion"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Reload</button>
         <button type="button" class="jm-btn" id="theme-btn" aria-label="Switch to dark mode"><svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 10.1A5.6 5.6 0 0 1 5.9 2.8a5.6 5.6 0 1 0 7.3 7.3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true" hidden><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Dark</span></button>
       </div>
@@ -42,7 +42,7 @@
   </section>
 
   <section class="jm-section jm-page" id="road" hidden>
-    <h2 class="jm-h"><span class="jm-emoji" aria-hidden="true">🚐</span>Tour stock</h2>
+    <h2 class="jm-h"><span class="jm-ico ico-truck" aria-hidden="true"></span>Tour stock</h2>
     <div class="jm-ts-bar">
       <div class="jm-seg jm-ts-seg" data-group="tsRange" role="group" aria-label="Looking ahead"><button type="button" data-val="d14">Next 2 weeks</button><button type="button" data-val="tour" class="is-on">Rest of booked tour</button></div>
       <span class="jm-ts-cap">Booked shows up to <b data-draw="ts-end" data-source="tour_need">—</b></span>
@@ -86,7 +86,7 @@
 
 
   <section class="jm-section jm-page" id="markets" hidden>
-    <h2 class="jm-h"><span class="jm-emoji" aria-hidden="true">🎟️</span>Fans
+    <h2 class="jm-h"><span class="jm-ico ico-ticket" aria-hidden="true"></span>Fans
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About merch per head" aria-describedby="i-markets">i</button><span role="tooltip" id="i-markets" class="jm-info-tip">Merch gross ÷ tickets sold, in Canadian dollars.<br><br>Actual attendance isn't recorded, so "per head" is per ticket sold.<br><br>Only played shows with both a ticket count and merch sales are included. Gross comes from point-of-sale sales, or from the calendar when a show has none linked.</span></span>
     </h2>
     <h3 class="jm-h3 jm-sub-h">Spend per fan</h3>
@@ -139,7 +139,7 @@
   </section>
 
   <section class="jm-section jm-page" id="profit" hidden>
-    <h2 class="jm-h"><span class="jm-emoji" aria-hidden="true">💰</span>Money
+    <h2 class="jm-h"><span class="jm-ico ico-banknote" aria-hidden="true"></span>Money
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About profit" aria-describedby="i-profit">i</button><span role="tooltip" id="i-profit" class="jm-info-tip "><b>Profit</b> = sales − HST/GST − cost of goods − venue merch cuts, in Canadian dollars.<br><br><b>HST / GST</b>: show prices include sales tax, so it's backed out of show sales rung up with no tax recorded, at the show's province rate (Ontario 13%, Nova Scotia 14%, NB/NL/PEI 15%, other provinces 5% GST). PST isn't backed out, and shows outside Canada have none.<br><br><b>Cost of goods</b> uses each product's unit cost in Notion, or the cost recorded in the sales spreadsheet.<br><br><b>Venue cuts</b> come from the sales spreadsheet where recorded. For Shopify sales they're worked out from each show's <b>Merch Terms</b> in Notion (for example 85/15 = 15% to the venue), on sales before tax. Blank terms count as no cut.<br><br><b>Card fees</b> use Shopify Payments' standard rates on Shopify sales: 2.6% in person, 2.9% online. Cash sales have no fee, so this runs a little high.<br><br>Products with no unit cost are marked and left out of profit.</span></span>
     </h2>
     <h3 class="jm-h3">By quarter</h3>
@@ -170,7 +170,7 @@
 
 
   <section class="jm-section jm-page" id="issues" hidden>
-    <h2 class="jm-h"><span class="jm-emoji" aria-hidden="true">⚠️</span>Data issues
+    <h2 class="jm-h"><span class="jm-ico ico-warning" aria-hidden="true"></span>Data issues
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About data issues" aria-describedby="i-issues">i</button><span role="tooltip" id="i-issues" class="jm-info-tip">Problems logged by the Shopify sync and by Claude, held for cleanup in the Notion Data Issues list.<br><br>High-severity issues can make the forecasts above wrong.</span></span>
     </h2>
     <div class="jm-tablewrap">

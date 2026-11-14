@@ -52,7 +52,7 @@ dash.draw('tour-gauges', (el) => {
     else if (r.days <= 0) st.textContent = r.sizes ? 'Out of ' + r.sizes + ' now' : 'None on tour';
     else st.textContent = (r.sizes ? r.sizes + ' runs out ' : 'Runs out ') + jm.shortDate(r.first_out) + ' · ' + r.days + (r.days === 1 ? ' day' : ' days');
     card.append(h, box, v, st);
-    if (hasQ) { const qb = document.createElement('a'); qb.className = 'g-quote'; qb.href = '#stock'; qb.textContent = '📄 Reprint quote on file'; qb.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); if (window.jmShowPage) window.jmShowPage('stock', true); }); card.appendChild(qb); }
+    if (hasQ) { const qb = document.createElement('a'); qb.className = 'g-quote'; qb.href = '#stock'; qb.textContent = 'Reprint quote on file'; qb.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); if (window.jmShowPage) window.jmShowPage('stock', true); }); card.appendChild(qb); }
     el.appendChild(card);
     // dial
     const W = Math.max(160, box.clientWidth || 220), R = Math.min(W / 2 - 14, 96), H = R + 28;
