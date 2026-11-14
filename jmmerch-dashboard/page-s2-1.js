@@ -24,7 +24,8 @@ dash.loader('sales', { description: 'Reads every page of the Sales view (100 row
     venue_cut: num(r['Venue Cut']) || 0,
     tax: num(r['Tax']) || 0,
     currency: r['Currency'] || 'CAD',
-    source: r['Source'] || null,
+    // Rows from a one-off Shopify backfill (Source "shopify-backfill-<date>") count as Shopify, so they get card fees and venue cuts too.
+    source: /^shopify/i.test(r['Source'] || '') ? 'Shopify' : (r['Source'] || null),
   }));
 } });
 
