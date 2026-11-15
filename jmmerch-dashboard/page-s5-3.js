@@ -69,11 +69,11 @@ const evRows = () => {
 dash.draw('ev-total', (el) => {
   const rows = evRows(); if (!rows) { el.textContent = '—'; return; }
   if (!rows.length) { el.textContent = 'No shows in this period.'; return; }
-  const withSales = rows.filter((r) => r.gross_from === 'Sales');
-  const g = d3.sum(rows, (r) => r.gross || 0), n = d3.sum(withSales, (r) => r.net || 0);
+  const withNet = rows.filter((r) => r.net != null), noNet = rows.filter((r) => r.gross != null && r.net == null).length;
+  const g = d3.sum(rows, (r) => r.gross || 0), n = d3.sum(withNet, (r) => r.net);
   const tix = d3.sum(rows.filter((r) => r.gross != null && r.tickets > 0), (r) => r.tickets);
   const gHead = d3.sum(rows.filter((r) => r.gross != null && r.tickets > 0), (r) => r.gross);
-  el.textContent = rows.length + (rows.length === 1 ? ' show' : ' shows') + ' · ' + jm.money(g) + ' merch gross · ' + jm.money(n) + ' net' + (tix > 0 ? ' · ' + jm.money2(gHead / tix) + ' per head' : '') + '.';
+  el.textContent = rows.length + (rows.length === 1 ? ' show' : ' shows') + ' · ' + jm.money(g) + ' merch gross · ' + jm.money(n) + ' net' + (noNet ? ' (' + noNet + (noNet === 1 ? ' show' : ' shows') + ' left out: no cost on file or calendar figure only)' : '') + (tix > 0 ? ' · ' + jm.money2(gHead / tix) + ' per head' : '') + '.';
 });
 dash.draw('ev-table', (tb) => {
   const rows = evRows(); if (!rows) { tb.replaceChildren(); return; }
@@ -83,7 +83,7 @@ dash.draw('ev-table', (tb) => {
     jm.cell(tr, r.capacity ? jm.int(r.capacity) : '—', 'n'); jm.cell(tr, r.tickets ? jm.int(r.tickets) : '—', 'n');
     const gc = jm.cell(tr, r.gross != null ? jm.money(r.gross) : '—', 'n');
     if (r.gross_from === 'Calendar') { const tag = document.createElement('small'); tag.className = 'ev-cal'; tag.textContent = ' cal.'; tag.title = 'From the tour calendar: no sales are linked to this show'; gc.appendChild(tag); }
-    jm.cell(tr, r.net != null ? jm.money(r.net) : '—', 'n'); jm.cell(tr, r.per_head != null ? jm.money2(r.per_head) : '—', 'n');
+    const nc = jm.cell(tr, r.net != null ? jm.money(r.net) : '—', 'n'); if (r.net_missing_cost) nc.title = 'Left blank: an item sold here has no unit cost on file'; jm.cell(tr, r.per_head != null ? jm.money2(r.per_head) : '—', 'n');
     return tr;
   }));
 });
