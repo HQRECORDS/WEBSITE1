@@ -170,3 +170,6 @@
 .jm-ov-card .ov-big b { font-family: var(--font-anthropic-serif); font-weight: 600; font-size: 2.4rem; }
 .jm-ov-card .ov-cap { margin: 0; text-align: center; font-size: 12px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .jm-ov-card .ov-when { text-align: center; margin-top: 6px; color: var(--color-fg); }
+.jm-ev-table td, .jm-ev-table th { white-space: nowrap; }
+.jm-ev-table td:nth-child(3) { white-space: normal; min-width: 140px; }
+.jm-ev-table .ev-cal { color: var(--color-fg-muted); font-size: 11px; }

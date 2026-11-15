@@ -59,6 +59,35 @@ dash.draw('ph-shows', (tb) => {
   }));
 });
 
+// ---------- Money: breakdown by event ----------
+const evRows = () => {
+  const d = dash.data('event_breakdown'); if (d.status !== 'ok') return null;
+  const since = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+  const days = { d30: 30, d60: 60, d90: 90, d120: 120, y1: 365 }[S.evRange];
+  return days ? d.data.filter((r) => r.date >= since(days)) : d.data;
+};
+dash.draw('ev-total', (el) => {
+  const rows = evRows(); if (!rows) { el.textContent = '—'; return; }
+  if (!rows.length) { el.textContent = 'No shows in this period.'; return; }
+  const withNet = rows.filter((r) => r.net != null), noNet = rows.filter((r) => r.gross != null && r.net == null).length;
+  const g = d3.sum(rows, (r) => r.gross || 0), n = d3.sum(withNet, (r) => r.net);
+  const tix = d3.sum(rows.filter((r) => r.gross != null && r.tickets > 0), (r) => r.tickets);
+  const gHead = d3.sum(rows.filter((r) => r.gross != null && r.tickets > 0), (r) => r.gross);
+  el.textContent = rows.length + (rows.length === 1 ? ' show' : ' shows') + ' · ' + jm.money(g) + ' merch gross · ' + jm.money(n) + ' net' + (noNet ? ' (' + noNet + (noNet === 1 ? ' show' : ' shows') + ' left out: no cost on file or calendar figure only)' : '') + (tix > 0 ? ' · ' + jm.money2(gHead / tix) + ' per head' : '') + '.';
+});
+dash.draw('ev-table', (tb) => {
+  const rows = evRows(); if (!rows) { tb.replaceChildren(); return; }
+  tb.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr'); tr.setAttribute('data-key', encodeURIComponent(r.show_id));
+    jm.cell(tr, jm.date(r.date)); jm.cell(tr, r.city + (r.region ? ', ' + r.region : '')); jm.cell(tr, r.venue || '—', 'muted');
+    jm.cell(tr, r.capacity ? jm.int(r.capacity) : '—', 'n'); jm.cell(tr, r.tickets ? jm.int(r.tickets) : '—', 'n');
+    const gc = jm.cell(tr, r.gross != null ? jm.money(r.gross) : '—', 'n');
+    if (r.gross_from === 'Calendar') { const tag = document.createElement('small'); tag.className = 'ev-cal'; tag.textContent = ' cal.'; tag.title = 'From the tour calendar: no sales are linked to this show'; gc.appendChild(tag); }
+    const nc = jm.cell(tr, r.net != null ? jm.money(r.net) : '—', 'n'); if (r.net_missing_cost) nc.title = 'Left blank: an item sold here has no unit cost on file'; jm.cell(tr, r.per_head != null ? jm.money2(r.per_head) : '—', 'n');
+    return tr;
+  }));
+});
+
 // ---------- Sales over time ----------
 const CH = ['Shows', 'Web', 'Other'];
 const chColor = (c) => (c === 'Shows' ? dash.colors[0] : c === 'Web' ? dash.colors[2] : 'var(--cds-chart-muted)');
