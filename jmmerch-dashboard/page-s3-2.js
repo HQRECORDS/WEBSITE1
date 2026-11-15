@@ -174,3 +174,30 @@ dash.calc('summary', { title: 'Headline numbers', description: 'Totals behind th
     { metric: 'last_synced', value: synced },
   ];
 } });
+
+dash.calc('event_breakdown', { title: 'Merch by event', description: 'Every show that has happened (Played, or Confirmed with a date before today): date, city, venue, capacity, tickets sold, merch gross from point-of-sale sales (or the tour calendar’s merch gross when no sales are linked), merch net = gross − GST/HST backed out − venue merch cut − Shopify card fees (before cost of goods), and gross per ticket.', inputs: ['shows', 'sales', 'products', 'venue_terms'], fn: (shows, sales, products, venue_terms) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const prod = new Map(products.map((p) => [p.id, p]));
+  const CARD_POS = 0.026; const RECORDED = new Set(['CD', 'Vinyl']);
+  const terms = new Map(venue_terms.map((v) => [v.show_id, v]));
+  const showPlace = new Map(shows.map((x) => [x.id, x]));
+  // Same rules as the profit figures above: tax backed out of tax-inclusive show sales by province, venue cut recorded or from Merch Terms, 2.6% card fee on Shopify POS.
+  const taxIn = (s) => { if (s.tax > 0 || !(s.gross_cad > 0)) return 0; const sh = showPlace.get(s.show_id);
+    let r = 0.13; if (sh) { const c = String(sh.country || '').toLowerCase(), pr = String(sh.region || '').toUpperCase(); r = c !== 'canada' && c !== 'ca' ? 0 : pr === 'ON' ? 0.13 : pr === 'NS' ? (s.date < '2025-04-01' ? 0.15 : 0.14) : ['NB', 'NL', 'PE'].includes(pr) ? 0.15 : 0.05; }
+    return s.gross_cad * r / (1 + r); };
+  const cutOf = (s, p, tx) => { if (s.venue_cut) return s.venue_cut; if (s.source !== 'Shopify') return 0; const v = terms.get(s.show_id); if (!v) return 0; const pc = RECORDED.has(p.category) || /\b(CD|Vinyl|LP)\b/i.test(p.product || '') ? v.recorded_pct : v.soft_pct; return (s.gross_cad - tx) * pc / 100; };
+  const by = new Map();
+  for (const s of sales) {
+    if (s.channel !== 'Show POS' || !s.show_id) continue;
+    const p = prod.get(s.product_id) || {}; const tx = taxIn(s); const cut = cutOf(s, p, tx); const fee = s.source === 'Shopify' ? s.gross_cad * CARD_POS : 0;
+    const a = by.get(s.show_id) || { gross: 0, net: 0 }; a.gross += s.gross_cad; a.net += s.gross_cad - tx - cut - fee; by.set(s.show_id, a);
+  }
+  const r2 = (v) => (v == null ? null : Math.round(v * 100) / 100);
+  return shows.filter((x) => x.date && x.date < today && x.status === 'Played').map((x) => {
+    const a = by.get(x.id); const fromSales = !!(a && a.gross > 0);
+    const gross = fromSales ? a.gross : (x.merch_gross_cal > 0 ? x.merch_gross_cal : null);
+    return { show_id: x.id, date: x.date, city: x.city, region: x.region || x.country, venue: x.venue, capacity: x.capacity, tickets: x.tickets,
+      gross: r2(gross), net: fromSales ? r2(a.net) : null, gross_from: fromSales ? 'Sales' : gross != null ? 'Calendar' : null,
+      per_head: gross != null && x.tickets > 0 ? r2(gross / x.tickets) : null };
+  }).sort((a, b) => (a.date < b.date ? 1 : -1));
+} });

@@ -142,18 +142,7 @@
     <h2 class="jm-h"><span class="jm-ico ico-banknote" aria-hidden="true"></span>Money
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About profit" aria-describedby="i-profit">i</button><span role="tooltip" id="i-profit" class="jm-info-tip "><b>Profit</b> = sales − HST/GST − cost of goods − venue merch cuts, in Canadian dollars.<br><br><b>HST / GST</b>: show prices include sales tax, so it's backed out of show sales rung up with no tax recorded, at the show's province rate (Ontario 13%, Nova Scotia 14%, NB/NL/PEI 15%, other provinces 5% GST). PST isn't backed out, and shows outside Canada have none.<br><br><b>Cost of goods</b> uses each product's unit cost in Notion, or the cost recorded in the sales spreadsheet.<br><br><b>Venue cuts</b> come from the sales spreadsheet where recorded. For Shopify sales they're worked out from each show's <b>Merch Terms</b> in Notion (for example 85/15 = 15% to the venue), on sales before tax. Blank terms count as no cut.<br><br><b>Card fees</b> use Shopify Payments' standard rates on Shopify sales: 2.6% in person, 2.9% online. Cash sales have no fee, so this runs a little high.<br><br>Products with no unit cost are marked and left out of profit.</span></span>
     </h2>
-    <h3 class="jm-h3">By quarter</h3>
-    <p class="jm-sub" data-draw="pq-cap">—</p>
-    <div class="jm-chart jm-pq" data-draw="pq-chart" data-source="profit_q" style="min-height: 260px"></div>
-    <h3 class="jm-h3">By product</h3>
-    <p class="jm-sub" data-draw="profit-takeaway">—</p>
-    <div class="jm-controls">
-      <div class="jm-seg" data-group="profitRange" role="group" aria-label="Dates"><button type="button" data-val="d30">30 days</button><button type="button" data-val="m12" class="is-on">12 months</button><button type="button" data-val="ytd">This year</button><button type="button" data-val="all">All time</button></div>
-      <div class="jm-seg" data-group="profitCh" role="group" aria-label="Where sold"><button type="button" data-val="all" class="is-on">All sales</button><button type="button" data-val="shows">At shows</button><button type="button" data-val="web">Web store</button></div>
-    </div>
-    <div class="jm-kpis" data-draw="profit-kpis" data-source="profit"></div>
-    <div class="jm-chart" data-draw="profit-chart" data-source="profit" style="min-height: 160px"></div>
-    <h3 class="jm-h3 jm-sub-h">Sales over time
+    <h3 class="jm-h3">Sales over time
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About sales over time" aria-describedby="i-trend">i</button><span role="tooltip" id="i-trend" class="jm-info-tip">Gross sales in Canadian dollars, or units sold.<br><br>Drag the handles on the strip above the chart to zoom in on any dates, or use the quick ranges.<br><br><b>Before October 2026</b> the numbers come from the sales history spreadsheet. From October 2025 to September 2026 that sheet only has months, so those sales sit on the 1st of each month in the daily and weekly views.<br><b>From October 2026</b> they come from Shopify.</span></span>
     </h3>
     <div class="jm-controls">
@@ -165,6 +154,22 @@
     </div>
     <p class="jm-sub" data-draw="trend-total">—</p>
     <div class="jm-chart" data-draw="trend-chart" data-source="sales_series" style="min-height: 240px"></div>
+      <h3 class="jm-h3">By product</h3>
+    <p class="jm-sub" data-draw="profit-takeaway">—</p>
+    <div class="jm-controls">
+      <div class="jm-seg" data-group="profitRange" role="group" aria-label="Dates"><button type="button" data-val="d30">30 days</button><button type="button" data-val="m12" class="is-on">12 months</button><button type="button" data-val="ytd">This year</button><button type="button" data-val="all">All time</button></div>
+      <div class="jm-seg" data-group="profitCh" role="group" aria-label="Where sold"><button type="button" data-val="all" class="is-on">All sales</button><button type="button" data-val="shows">At shows</button><button type="button" data-val="web">Web store</button></div>
+    </div>
+    <div class="jm-kpis" data-draw="profit-kpis" data-source="profit"></div>
+    <div class="jm-chart" data-draw="profit-chart" data-source="profit" style="min-height: 160px"></div>
+    <h3 class="jm-h3">Breakdown by event
+      <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About the breakdown by event" aria-describedby="i-events">i</button><span role="tooltip" id="i-events" class="jm-info-tip"><b>Merch gross</b>: point-of-sale sales at the show, in Canadian dollars. Where no sales are linked to a show, the tour calendar's merch figure is used (marked "cal.") and net is left blank.<br><br><b>Merch net</b> = gross − HST/GST − the venue's merch cut − card fees, before cost of goods.<br><br><b>Attendance</b> is tickets sold. <b>Per head</b> = merch gross ÷ attendance.</span></span>
+    </h3>
+    <div class="jm-controls">
+      <div class="jm-seg" data-group="evRange" role="group" aria-label="Dates"><button type="button" data-val="d30">30 days</button><button type="button" data-val="d60">60 days</button><button type="button" data-val="d90">90 days</button><button type="button" data-val="d120">120 days</button><button type="button" data-val="y1" class="is-on">1 year</button><button type="button" data-val="all">All time</button></div>
+    </div>
+    <p class="jm-sub" data-draw="ev-total">—</p>
+    <div class="jm-tablewrap"><table class="jm-table jm-ev-table" data-source="event_breakdown"><thead><tr><th>Date</th><th>City</th><th>Venue</th><th class="n">Capacity</th><th class="n">Attendance</th><th class="n">Merch gross</th><th class="n">Merch net</th><th class="n">Per head</th></tr></thead><tbody data-draw="ev-table"></tbody></table></div>
   </section>
 
 
