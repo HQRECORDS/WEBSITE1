@@ -173,3 +173,8 @@
 .jm-ev-table td, .jm-ev-table th { white-space: nowrap; }
 .jm-ev-table td:nth-child(3) { white-space: normal; min-width: 140px; }
 .jm-ev-table .ev-cal { color: var(--color-fg-muted); font-size: 11px; }
+.jm-ov-period { margin-top: 2px; }
+.jm-ov-custom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.jm-ov-custom[hidden] { display: none; }
+.jm-ov-custom label { display: inline-flex; align-items: center; gap: 6px; }
+.jm-ov-custom input[type="date"] { font: inherit; font-size: var(--cds-font-size-body); color-scheme: inherit; }

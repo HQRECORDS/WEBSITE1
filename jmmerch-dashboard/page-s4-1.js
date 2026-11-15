@@ -9,7 +9,7 @@ badge('nav-road', 'short', () => 'bad');
 badge('nav-reorder', 'reorder_soon', () => 'warn');
 badge('nav-issues', 'high_issues', () => 'warn');
 
-window.jmState = Object.assign({ roadView: 'chart', holds: false, roadFrom: -14, roadTo: 28, roadSort: 'risk', stockLoc: 'road', stockGroup: 'all', stockSort: 'urgent', phView: 'region', phRange: 'last12', phSort: 'per_ticket', showSort: 'date', showDir: -1, trendRange: '1y', sizeGroup: 'city', sizeShow: 'pct', sizeProduct: 'All shirts', profitRange: 'm12', profitCh: 'all', geoLevel: 'country', geoMeasure: 'orders', geoRange: 'm12', evRange: 'y1', trendFrom: null, trendTo: null, grain: 'auto', metric: 'gross', ch: { Shows: true, Web: true, Other: true } }, window.jmState || {});
+window.jmState = Object.assign({ roadView: 'chart', holds: false, roadFrom: -14, roadTo: 28, roadSort: 'risk', stockLoc: 'road', stockGroup: 'all', stockSort: 'urgent', phView: 'region', phRange: 'last12', phSort: 'per_ticket', showSort: 'date', showDir: -1, trendRange: '1y', sizeGroup: 'city', sizeShow: 'pct', sizeProduct: 'All shirts', profitRange: 'm12', profitCh: 'all', geoLevel: 'country', geoMeasure: 'orders', geoRange: 'm12', evRange: 'y1', ovRange: 'm3', trendFrom: null, trendTo: null, grain: 'auto', metric: 'gross', ch: { Shows: true, Web: true, Other: true } }, window.jmState || {});
 if (!window.jmState.ch) window.jmState.ch = { Shows: true, Web: true, Other: true };
 if (typeof window.jmState.roadFrom !== 'number') { window.jmState.roadFrom = -14; window.jmState.roadTo = 28; }
 const S = window.jmState;
@@ -19,7 +19,8 @@ S.stockLoc = 'web'; S.stockGroup = 'all'; S.stockSort = 'urgent'; S.grain = 'mon
 // Segmented controls, checkbox, selects: update state and redraw.
 const ROAD = ['road-multiples', 'road-grid', 'road-range-cap', 'road-modal'];
 const TREND = ['trend-chart', 'trend-range', 'trend-total'];
-const redrawFor = { evRange: ['ev-table', 'ev-total'], tsRange: ['ts-end', 'ts-k-short', 'ts-k-units', 'ts-k-tight', 'ts-k-ok', 'ts-list', 'ts-pack'], sizeGroup: ['sizes-table', 'sizes-takeaway'], sizeShow: ['sizes-table'], profitRange: ['profit-kpis', 'profit-chart', 'profit-takeaway'], profitCh: ['profit-kpis', 'profit-chart', 'profit-takeaway'], geoLevel: ['geo-chart', 'geo-takeaway'], geoMeasure: ['geo-chart', 'geo-takeaway'], geoRange: ['geo-chart', 'geo-takeaway'], roadView: ROAD, stockLoc: ['stock-list'], stockGroup: ['stock-list'], phView: ['ph-region', 'ph-shows', 'ph-items'], grain: TREND, metric: TREND,
+const OVP = ['ov-short', 'ov-end', 'ov-cards', 'ov-period-cap'];
+const redrawFor = { evRange: ['ev-table', 'ev-total'], ovRange: () => { applyPanels(); OVP.forEach((n) => dash.draw(n)); }, tsRange: ['ts-end', 'ts-k-short', 'ts-k-units', 'ts-k-tight', 'ts-k-ok', 'ts-list', 'ts-pack'], sizeGroup: ['sizes-table', 'sizes-takeaway'], sizeShow: ['sizes-table'], profitRange: ['profit-kpis', 'profit-chart', 'profit-takeaway'], profitCh: ['profit-kpis', 'profit-chart', 'profit-takeaway'], geoLevel: ['geo-chart', 'geo-takeaway'], geoMeasure: ['geo-chart', 'geo-takeaway'], geoRange: ['geo-chart', 'geo-takeaway'], roadView: ROAD, stockLoc: ['stock-list'], stockGroup: ['stock-list'], phView: ['ph-region', 'ph-shows', 'ph-items'], grain: TREND, metric: TREND,
   trendRange: () => { S.trendFrom = null; S.trendTo = null; TREND.forEach((n) => dash.draw(n)); } };
 const applyPanels = () => {
   document.querySelectorAll('#road-chart-panel').forEach((p) => { p.hidden = S.roadView !== 'chart'; });
@@ -28,6 +29,7 @@ const applyPanels = () => {
   document.querySelectorAll('#ph-show-panel').forEach((p) => { p.hidden = S.phView !== 'show'; });
   document.querySelectorAll('#ph-item-panel').forEach((p) => { p.hidden = S.phView !== 'item'; });
   document.querySelectorAll('#ph-sort-field').forEach((p) => { p.hidden = S.phView !== 'region'; });
+  document.querySelectorAll('#ov-custom').forEach((p) => { p.hidden = S.ovRange !== 'custom'; });
 };
 document.querySelectorAll('.jm-seg[data-group]').forEach((seg) => {
   const group = seg.getAttribute('data-group');
@@ -121,4 +123,22 @@ window.jmShowPage = showPage;
   });
   if (mq.addEventListener) mq.addEventListener('change', paint);
   paint();
+})();
+
+// Overview custom forecast range: two date pickers feed the forecast through dash params.
+(function () {
+  const box = document.getElementById('ov-custom'); if (!box) return;
+  const from = document.getElementById('ov-from'), to = document.getElementById('ov-to');
+  const iso = (d) => d.toISOString().slice(0, 10); const today = iso(new Date());
+  const P = dash.params ? dash.params() : {};
+  from.min = today; to.min = today;
+  from.value = P.ovFrom || today; to.value = P.ovTo || iso(new Date(Date.now() + 30 * 864e5));
+  const apply = () => {
+    if (!from.value) from.value = today; if (from.value < today) from.value = today;
+    if (!to.value || to.value < from.value) to.value = from.value;
+    to.min = from.value;
+    dash.setParams({ ovFrom: from.value, ovTo: to.value });
+  };
+  from.addEventListener('change', apply); to.addEventListener('change', apply);
+  if (!P.ovFrom) dash.setParams({ ovFrom: from.value, ovTo: to.value });
 })();
