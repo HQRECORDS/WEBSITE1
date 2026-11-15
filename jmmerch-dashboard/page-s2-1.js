@@ -50,6 +50,9 @@ dash.loader('shows', { description: 'Reads every page of the Shows view and keep
     if (seen === undefined) { byKey.set(k, rows.length); rows.push(r); }
     else if (!hasSales(rows[seen]) && hasSales(r)) rows[seen] = r;
   }
+  // A Confirmed show whose date has passed counts as Played, so it shows up without editing Notion after every show.
+  const today = new Date().toISOString().slice(0, 10);
+  const statusOf = (r) => { const st = r['Status'] || ''; const d = r['date:Date:start'] || ''; return st === 'Confirmed' && d && d < today ? 'Played' : st; };
   return rows.map((r) => ({
     id: (String(r.url || '').match(/[0-9a-f]{32}/g) || []).pop() || null,
     show: un(r['Show']),
@@ -59,7 +62,7 @@ dash.loader('shows', { description: 'Reads every page of the Shows view and keep
     region: un(r['Province/State']),
     country: r['Country'] || '',
     venue: un(r['Venue']),
-    status: r['Status'] || '',
+    status: statusOf(r),
     show_type: r['Show Type'] || '',
     capacity: num(r['Capacity']),
     tickets: num(r['Tickets Sold']),
