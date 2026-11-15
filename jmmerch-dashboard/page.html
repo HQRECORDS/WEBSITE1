@@ -72,14 +72,6 @@
       <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About inventory" aria-describedby="i-stock">i</button><span role="tooltip" id="i-stock" class="jm-info-tip"><b>Status</b> (hover it for details)<br>• <b>Order now</b>: the order-by date has passed<br>• <b>Order soon</b>: order within 30 days<br>• <b>Set lead time</b>: add the supplier lead time in Notion<br>• <b>OK</b>: nothing due<br><br>Runs out = the earlier of road stock running out at booked shows, or web stock running out at the last 8 weeks' pace. Order by = runs out minus the lead time.<br><br><b>On the road</b> is what John carries. <b>Web store</b> is stock at Muirhead HQ and PRP Fulfillment.<br><br>Counts are from the last sync. Sizes in red are 3 or fewer.</span></span>
     </h3>
     <div class="jm-stock" data-draw="stock-list" data-source="stock reorder road_plan web_plan road_sizes quotes"></div>
-    <h3 class="jm-h3">Reprint quotes on file
-      <span class="jm-info"><button type="button" class="jm-info-btn" aria-label="About reprint quotes" aria-describedby="i-quotes">i</button><span role="tooltip" id="i-quotes" class="jm-info-tip">Open supplier quotes from the <b>Supplier Quotes &amp; Invoices</b> database in Notion. Costs are before HST and exclude freight.<br><br><b>Profit each</b> = retail price − quoted cost per unit.<br><b>Lasts about</b> = quantity ÷ the last 90 days' monthly sales (shows and web together).<br><br>Vinyl runs can come in 10% over or under, and the difference is billed.</span></span>
-    </h3>
-    <div class="jm-quotes" data-draw="quotes-open" data-source="quotes"></div>
-    <details class="jm-more-rows">
-      <summary data-draw="docs-sum">—</summary>
-      <div class="jm-tablewrap"><table class="jm-table" data-source="quotes" data-row-key="doc_id"><thead><tr><th>Date</th><th>Document</th><th>Status</th><th class="n">Qty</th><th class="n">Each, ex-HST</th><th class="n">Subtotal</th><th>Due</th></tr></thead><tbody data-draw="docs-table"></tbody></table></div>
-    </details>
   </section>
 
 
