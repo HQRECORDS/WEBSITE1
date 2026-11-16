@@ -47,13 +47,11 @@ dash.draw('tour-gauges', (el) => {
     vb.setAttribute('data-source', 'tour_status'); vb.setAttribute('data-field', 'road'); vb.setAttribute('data-where', 'product=' + encodeURIComponent(r.product));
     const vs = document.createElement('small'); vs.textContent = 'on hand'; v.append(vb, vs);
     const st = document.createElement('div'); st.className = 'g-st';
-    const qd = dash.data('quotes'); const hasQ = qd.status === 'ok' && qd.data.some((q) => q.product === r.product && q.type === 'Quote' && q.status === 'Open');
     if (!r.has_sales) st.textContent = 'No show sales yet';
     else if (!r.first_out) st.textContent = 'Lasts past the booked shows';
     else if (r.days <= 0) st.textContent = r.sizes ? 'Out of ' + r.sizes + ' now' : 'None on tour';
     else st.textContent = (r.sizes ? r.sizes + ' runs out ' : 'Runs out ') + jm.shortDate(r.first_out) + ' · ' + r.days + (r.days === 1 ? ' day' : ' days');
     card.append(h, box, v, st);
-    if (hasQ) { const qb = document.createElement('a'); qb.className = 'g-quote'; qb.href = '#stock'; qb.textContent = 'Reprint quote on file'; qb.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); if (window.jmShowPage) window.jmShowPage('stock', true); }); card.appendChild(qb); }
     el.appendChild(card);
     // dial
     const W = Math.max(160, box.clientWidth || 220), R = Math.min(W / 2 - 14, 96), H = R + 28;
