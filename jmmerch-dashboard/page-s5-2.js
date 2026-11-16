@@ -29,9 +29,16 @@ dash.draw('road-multiples', (el) => {
 
 // ---------- Road: expanded view ----------
 // ---------- Overview (one urgency rule: rest of booked tour) ----------
-const ovSum = () => { const d = dash.data('tour_need_sum'); return d.status === 'ok' ? (d.data || []).find((r) => r.range === 'tour') : null; };
-dash.draw('ov-short', (el) => { const s = ovSum(); el.textContent = s ? jm.int(s.short_products) : '—'; if (s) el.setAttribute('data-where', 'range=tour'); });
-dash.draw('ov-end', (el) => { const s = ovSum(); el.textContent = s && s.end ? d3.utcFormat('%b %-d')(new Date(s.end + 'T00:00:00Z')) : '—'; if (s) el.setAttribute('data-where', 'range=tour'); });
+const ovRange = () => (S.ovRange || 'm3');
+const ovSum = () => { const d = dash.data('tour_need_sum'); return d.status === 'ok' ? (d.data || []).find((r) => r.range === ovRange()) : null; };
+dash.draw('ov-short', (el) => { const s = ovSum(); el.textContent = s ? jm.int(s.short_products) : '—'; if (s) el.setAttribute('data-where', 'range=' + ovRange()); });
+dash.draw('ov-end', (el) => { const s = ovSum(); el.textContent = s && s.end ? d3.utcFormat(s.end.slice(0, 4) === new Date().toISOString().slice(0, 4) ? '%b %-d' : '%b %-d, %Y')(new Date(s.end + 'T00:00:00Z')) : '—'; if (s) el.setAttribute('data-where', 'range=' + ovRange()); });
+dash.draw('ov-period-cap', (el) => {
+  const s = ovSum(); if (!s || !s.end) { el.textContent = '—'; return; }
+  const f = (v) => d3.utcFormat('%b %-d, %Y')(new Date(v + 'T00:00:00Z'));
+  const today = new Date().toISOString().slice(0, 10);
+  el.textContent = (s.from && s.from > today ? 'Confirmed shows ' + f(s.from) + ' to ' + f(s.end) : 'Confirmed shows from today to ' + f(s.end)) + ': ' + s.shows + (s.shows === 1 ? ' show' : ' shows') + '. Open Tour stock for sizes and the packing list.';
+});
 const ovNext = () => { const d = dash.data('upcoming'); return d.status === 'ok' ? d.data.find((u) => u.status === 'Confirmed') : null; };
 dash.draw('ov-next', (el) => { const n = ovNext(); el.textContent = n ? d3.utcFormat('%b %-d')(new Date(n.date + 'T00:00:00Z')) : (dash.data('upcoming').status === 'ok' ? 'None booked' : '—'); if (n) el.setAttribute('data-where', 'show_id=' + encodeURIComponent(n.show_id)); });
 dash.draw('ov-next-sub', (el) => { const n = ovNext(); el.textContent = n ? n.city + (n.region ? ', ' + n.region : '') + (n.venue ? ' · ' + n.venue : '') : '—'; if (n) el.setAttribute('data-where', 'show_id=' + encodeURIComponent(n.show_id)); });
@@ -57,7 +64,7 @@ dash.draw('ov-cards', (el) => {
     svg.appendChild(svgEl('circle', { cx, cy, r: 5.5, class: 'ov-hub' }));
     return svg;
   };
-  const rows = pinFirst(d.data.filter((r) => r.range === 'tour'), (r) => r.product);
+  const rows = pinFirst(d.data.filter((r) => r.range === ovRange()), (r) => r.product);
   el.replaceChildren(...rows.map((r) => {
     const tone = cls[r.status], pinned = isPinned(r.product);
     const card = mk('div', 'jm-ov-card ' + tone + (pinned ? ' pinned' : ''));
@@ -77,11 +84,13 @@ dash.draw('ov-cards', (el) => {
     const big = mk('div', 'ov-big'); const b = mk('b', null, jm.int(r.short > 0 ? r.short : r.spare));
     b.setAttribute('data-source', 'tour_need'); b.setAttribute('data-field', r.short > 0 ? 'short' : 'spare'); b.setAttribute('data-where', 'key=' + encodeURIComponent(r.key));
     big.append(b, mk('small', null, r.short > 0 ? 'short' : 'spare'));
-    const cap = mk('p', 'ov-cap', jm.int(r.on_hand) + ' on hand · ' + jm.int(r.need) + ' needed');
+    const later = r.from && r.from > new Date().toISOString().slice(0, 10);
+    const cap = mk('p', 'ov-cap', jm.int(r.on_hand) + (later ? ' left by ' + d3.utcFormat('%b %-d')(new Date(r.from + 'T00:00:00Z')) : ' on hand') + ' · ' + jm.int(r.need) + ' needed');
     let line;
     if (r.first_out_city === 'now') line = r.first_out_sizes ? r.first_out_sizes + ' already out' : 'None on tour now';
+    else if (r.first_out_city === 'before') line = (r.first_out_sizes ? r.first_out_sizes + ' out' : 'Out') + ' before ' + fmt(new Date(r.first_out_date + 'T00:00:00Z'));
     else if (r.first_out_date) line = (r.first_out_sizes ? r.first_out_sizes + ' runs out' : 'Runs out') + ' at ' + r.first_out_city + ' · ' + fmt(new Date(r.first_out_date + 'T00:00:00Z'));
-    else line = r.need > 0 ? 'Lasts the booked shows' : 'No sales expected';
+    else line = r.need > 0 ? 'Lasts through this period' : 'No sales expected in this period';
     const mid = mk('div', 'ov-mid'); mid.append(dial(r, tone), big);
     card.append(top, pill, mid, cap, mk('p', 'ov-when', line));
     return card;

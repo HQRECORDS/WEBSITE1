@@ -29,14 +29,18 @@
 
   <section class="jm-section jm-page" id="overview">
     <div class="jm-kpis4">
-      <a class="jm-k jm-k-red" href="#road" data-target="road"><span class="lbl">Running short</span><b data-draw="ov-short" data-source="tour_need_sum" data-field="short_products">—</b><small>products before <span data-draw="ov-end" data-source="tour_need_sum" data-field="end">—</span></small></a>
+      <a class="jm-k jm-k-red" href="#road" data-target="road"><span class="lbl">Running short</span><b data-draw="ov-short" data-source="tour_need_sum" data-field="short_products">—</b><small>products by <span data-draw="ov-end" data-source="tour_need_sum" data-field="end">—</span></small></a>
       <a class="jm-k jm-k-amber" href="#road" data-target="road"><span class="lbl">Next show</span><b data-draw="ov-next" data-source="upcoming" data-field="date">—</b><small data-draw="ov-next-sub" data-source="upcoming" data-field="city">—</small></a>
       <a class="jm-k jm-k-blue" href="#road" data-target="road"><span class="lbl">Units on tour</span><b data-draw="k-units" data-source="tour_status">—</b><small data-draw="k-units-sub">—</small></a>
       <a class="jm-k jm-k-green" href="#profit" data-target="profit"><span class="lbl" data-draw="k-profit-lbl">—</span><b data-draw="k-profit" data-source="profit_q">—</b><small data-draw="k-profit-sub">—</small></a>
     </div>
     <div class="jm-ovhead">
       <h2 class="jm-h">Tour stock at a glance</h2>
-      <span class="jm-sub">Through the last booked show. Open Tour stock for sizes and the packing list.</span>
+      <span class="jm-sub" data-draw="ov-period-cap" data-source="tour_need_sum">—</span>
+    </div>
+    <div class="jm-controls jm-ov-period">
+      <div class="jm-seg" data-group="ovRange" role="group" aria-label="Forecast period"><button type="button" data-val="d30">30 days</button><button type="button" data-val="m3" class="is-on">3 months</button><button type="button" data-val="m6">6 months</button><button type="button" data-val="m12">12 months</button><button type="button" data-val="eoy">End of year</button><button type="button" data-val="custom">Custom</button></div>
+      <div class="jm-ov-custom" id="ov-custom" hidden><label>From <input type="date" id="ov-from" class="dash-select"></label><label>To <input type="date" id="ov-to" class="dash-select"></label></div>
     </div>
     <div class="jm-ov-cards" id="ov-cards" data-draw="ov-cards" data-source="tour_need"></div>
   </section>

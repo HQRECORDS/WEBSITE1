@@ -220,29 +220,45 @@ dash.calc('tour_status', { title: 'Tour stock status', description: 'Each produc
   return out.sort((a, b) => a.rank - b.rank || (a.first_out || '9999').localeCompare(b.first_out || '9999') || a.product.localeCompare(b.product));
 } });
 
-dash.calc('tour_need', { title: 'Tour stock: have, need, short', description: 'For each product John carries or sells at shows, and for two periods (the next 14 days, and up to the last confirmed show): units on hand with John, units needed for the confirmed shows in that period (units per 100 tickets × expected tickets), units short (for apparel, added up size by size) or spare, and the first show where the product or one of its sizes runs out within that period. Short if anything is short; tight if the spare is under 20% of what is needed; enough otherwise.', inputs: ['road_plan', 'road_sizes', 'upcoming'], fn: (road_plan, road_sizes, upcoming) => {
+dash.calc('tour_need', { title: 'Tour stock: have, need, short', description: 'For each product John carries or sells at shows, and for each period (the next 14 days; up to the last confirmed show; the overview’s 30 days, 3, 6 and 12 months, end of year; and a custom date range): units on hand with John, units needed for the confirmed shows in that period (units per 100 tickets × expected tickets), units short (for apparel, added up size by size) or spare, and the first show where the product or one of its sizes runs out within that period. Short if anything is short; tight if the spare is under 20% of what is needed; enough otherwise.', inputs: ['road_plan', 'road_sizes', 'upcoming'], fn: (road_plan, road_sizes, upcoming) => {
   const today = new Date().toISOString().slice(0, 10);
-  const conf = upcoming.filter((u) => u.status === 'Confirmed' && u.date <= new Date(Date.now() + 180 * 864e5).toISOString().slice(0, 10));
-  const ends = { d14: new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10), tour: conf.length ? conf[conf.length - 1].date : today };
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const plusDays = (n) => iso(new Date(Date.now() + n * 864e5));
+  const plusMonths = (n) => { const d = new Date(today + 'T00:00:00Z'); d.setUTCMonth(d.getUTCMonth() + n); return iso(d); };
+  const confAll = upcoming.filter((u) => u.status === 'Confirmed');
+  const conf180 = confAll.filter((u) => u.date <= plusDays(180));
+  // Custom range comes from the overview's date pickers (dash.params ovFrom / ovTo); defaults to the next 30 days.
+  const P = (dash.params && dash.params()) || {}; const okDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  let cFrom = okDate(P.ovFrom) && P.ovFrom > today ? P.ovFrom : today, cTo = okDate(P.ovTo) ? P.ovTo : plusDays(30); if (cTo < cFrom) cTo = cFrom;
+  const periods = {
+    d14: { from: today, to: plusDays(14), shows: conf180 }, tour: { from: today, to: conf180.length ? conf180[conf180.length - 1].date : today, shows: conf180 },
+    d30: { from: today, to: plusDays(30) }, m3: { from: today, to: plusMonths(3) }, m6: { from: today, to: plusMonths(6) }, m12: { from: today, to: plusMonths(12) },
+    eoy: { from: today, to: today.slice(0, 4) + '-12-31' }, custom: { from: cFrom, to: cTo },
+  };
   const out = [];
-  for (const [range, end] of Object.entries(ends)) {
-    const exp = conf.filter((u) => u.date <= end).reduce((t, u) => t + u.expected, 0);
+  for (const [range, pd] of Object.entries(periods)) {
+    const end = pd.to, from = pd.from, pool = pd.shows || confAll;
+    const exp = pool.filter((u) => u.date >= from && u.date <= end).reduce((t, u) => t + u.expected, 0);
+    // For a custom range starting later, shows before it use up stock first: work from projected stock at the start.
+    const expBefore = from > today ? confAll.filter((u) => u.date < from).reduce((t, u) => t + u.expected, 0) : 0;
     for (const r of road_plan) {
-      const road = Math.max(0, r.road || 0); const rate = r.rate || 0;
-      if (!(road > 0) && !(rate > 0)) continue;
-      const sizes = road_sizes.filter((z) => z.product === r.product);
+      const rate = r.rate || 0; const road0 = Math.max(0, r.road || 0);
+      if (!(road0 > 0) && !(rate > 0)) continue;
+      const sizes = road_sizes.filter((z) => z.product === r.product).map((z) => ({ ...z, qty: Math.max(0, Math.max(0, z.qty) - Math.round(rate * z.share * expBefore)) }));
+      const road = sizes.length ? sizes.reduce((t, z) => t + z.qty, 0) : Math.max(0, road0 - Math.round(rate * expBefore));
       const need = sizes.length ? sizes.reduce((t, z) => t + Math.round(rate * z.share * exp), 0) : Math.round(rate * exp);
       const short = sizes.length ? sizes.reduce((t, z) => t + Math.max(0, Math.round(rate * z.share * exp) - Math.max(0, z.qty)), 0) : Math.max(0, need - road);
       const spare = short > 0 ? 0 : road - need;
       const outs = [];
-      if (!(road > 0) && rate > 0) outs.push({ date: today, city: 'now', size: '' });
-      if (r.runs_out_date && r.runs_out_date <= end) outs.push({ date: r.runs_out_date, city: r.runs_out_city, size: '' });
-      for (const z of sizes) { if (z.runs_out_date === 'now') outs.push({ date: today, city: 'now', size: z.size }); else if (z.runs_out_date && z.runs_out_date <= end) outs.push({ date: z.runs_out_date, city: z.runs_out_city, size: z.size }); }
+      const at = (date, city, size) => (date < from ? { date: from, city: 'before', size } : { date, city, size });
+      if (!(road0 > 0) && rate > 0) outs.push(at(today, 'now', ''));
+      if (r.runs_out_date && r.runs_out_date <= end) outs.push(at(r.runs_out_date, r.runs_out_city, ''));
+      for (const z of sizes) { if (z.runs_out_date === 'now') outs.push(at(today, 'now', z.size)); else if (z.runs_out_date && z.runs_out_date <= end) outs.push(at(z.runs_out_date, z.runs_out_city, z.size)); }
       outs.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : (a.size ? 1 : 0) - (b.size ? 1 : 0)));
       const f = outs[0] || null;
       const fSizes = f ? [...new Set(outs.filter((x) => x.date === f.date && x.size).map((x) => x.size))] : [];
       const status = short > 0 ? 'short' : need > 0 && spare < need * 0.2 ? 'tight' : 'ok';
-      out.push({ key: r.product + '|' + range, product: r.product, range, end, on_hand: road, need, short, spare, status, rank: status === 'short' ? 0 : status === 'tight' ? 1 : 2,
+      out.push({ key: r.product + '|' + range, product: r.product, range, from, end, shows: pool.filter((u) => u.date >= from && u.date <= end).length, on_hand: road, need, short, spare, status, rank: status === 'short' ? 0 : status === 'tight' ? 1 : 2,
         first_out_date: f ? f.date : null, first_out_city: f ? f.city : '', first_out_sizes: fSizes.join(', '), has_sizes: sizes.length > 0 });
     }
   }
@@ -265,9 +281,9 @@ dash.calc('tour_need_sizes', { title: 'Tour stock by size: have and need', descr
   return out;
 } });
 
-dash.calc('tour_need_sum', { title: 'Tour stock counts', description: 'For each period: how many products are short, tight or covered, and the total units short.', inputs: ['tour_need'], fn: (tour_need) => ['d14', 'tour'].map((range) => {
+dash.calc('tour_need_sum', { title: 'Tour stock counts', description: 'For each period: how many products are short, tight or covered, and the total units short.', inputs: ['tour_need'], fn: (tour_need) => ['d14', 'tour', 'd30', 'm3', 'm6', 'm12', 'eoy', 'custom'].map((range) => {
   const rows = tour_need.filter((r) => r.range === range);
-  return { range, end: rows.length ? rows[0].end : null, short_products: rows.filter((r) => r.status === 'short').length, tight_products: rows.filter((r) => r.status === 'tight').length, ok_products: rows.filter((r) => r.status === 'ok').length, short_units: rows.reduce((t, r) => t + r.short, 0) };
+  return { range, from: rows.length ? rows[0].from : null, end: rows.length ? rows[0].end : null, shows: rows.length ? rows[0].shows : 0, short_products: rows.filter((r) => r.status === 'short').length, tight_products: rows.filter((r) => r.status === 'tight').length, ok_products: rows.filter((r) => r.status === 'ok').length, short_units: rows.reduce((t, r) => t + r.short, 0) };
 }) });
 
 dash.calc('quotes', { title: 'Supplier quotes and invoices by product', description: 'Each supplier document with its product, retail price, unit cost ex-HST, profit per unit and margin at retail, how many months the quantity would last at the last 90 days’ sales pace (shows and web together), and, for open quotes on the same product, the extra cost per extra unit compared with the next smaller quote.', inputs: ['supplier_docs', 'products', 'sales'], fn: (supplier_docs, products, sales) => {
