@@ -50,30 +50,18 @@
     display: block;
   }
 
-  .tagline {
-    margin-top: 1.75rem;
-    font-size: 0.95rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: #111111;
-  }
-
   @media (max-width: 420px) {
     .logo {
       max-width: 260px;
-    }
-    .tagline {
-      font-size: 0.8rem;
-      letter-spacing: 0.25em;
     }
   }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <img class="logo" src="logo.jpg" alt="HQ Records logo">
-    <div class="tagline">a record label</div>
+    <video class="logo" src="logo-animated.mp4" poster="logo-animated-poster.jpg"
+           autoplay muted loop playsinline disablepictureinpicture
+           width="540" height="752" aria-label="HQ Records logo"></video>
   </div>
 </body>
 </html>
