@@ -153,9 +153,10 @@
       <h3 class="jm-h3">By product</h3>
     <p class="jm-sub" data-draw="profit-takeaway">—</p>
     <div class="jm-controls">
-      <div class="jm-seg" data-group="profitRange" role="group" aria-label="Dates"><button type="button" data-val="d30">30 days</button><button type="button" data-val="m12" class="is-on">12 months</button><button type="button" data-val="ytd">This year</button><button type="button" data-val="all">All time</button></div>
+      <div class="jm-seg" data-group="profitRange" role="group" aria-label="Dates"><button type="button" data-val="d30">30 days</button><button type="button" data-val="m12" class="is-on">12 months</button><button type="button" data-val="ytd">This year</button><button type="button" data-val="all">All time</button><button type="button" data-val="custom">Custom</button></div>
       <div class="jm-seg" data-group="profitCh" role="group" aria-label="Where sold"><button type="button" data-val="all" class="is-on">All sales</button><button type="button" data-val="shows">At shows</button><button type="button" data-val="web">Web store</button></div>
     </div>
+    <div class="jm-ov-custom" id="profit-custom" hidden><label>From <input type="date" id="profit-from" class="dash-select"></label><label>To <input type="date" id="profit-to" class="dash-select"></label></div>
     <div class="jm-kpis" data-draw="profit-kpis" data-source="profit"></div>
     <div class="jm-chart" data-draw="profit-chart" data-source="profit" style="min-height: 160px"></div>
     <h3 class="jm-h3">Breakdown by event
