@@ -37,7 +37,10 @@ dash.draw('ov-period-cap', (el) => {
   const s = ovSum(); if (!s || !s.end) { el.textContent = '—'; return; }
   const f = (v) => d3.utcFormat('%b %-d, %Y')(new Date(v + 'T00:00:00Z'));
   const today = new Date().toISOString().slice(0, 10);
-  el.textContent = (s.from && s.from > today ? 'Confirmed shows ' + f(s.from) + ' to ' + f(s.end) : 'Confirmed shows from today to ' + f(s.end)) + ': ' + s.shows + (s.shows === 1 ? ' show' : ' shows') + '. Open Tour stock for sizes and the packing list.';
+  const P = ovRange() === 'custom' && dash.params ? dash.params() : {};
+  if (P.ovTo && P.ovTo < today) { el.textContent = 'These dates are all in the past, so there is nothing left to forecast. Pick a To date from today on.'; return; }
+  const past = P.ovFrom && P.ovFrom < today ? 'Shows before today have already happened, so this forecast starts from today. ' : '';
+  el.textContent = past + (s.from && s.from > today ? 'Confirmed shows ' + f(s.from) + ' to ' + f(s.end) : 'Confirmed shows from today to ' + f(s.end)) + ': ' + s.shows + (s.shows === 1 ? ' show' : ' shows') + '. Open Tour stock for sizes and the packing list.';
 });
 const ovNext = () => { const d = dash.data('upcoming'); return d.status === 'ok' ? d.data.find((u) => u.status === 'Confirmed') : null; };
 dash.draw('ov-next', (el) => { const n = ovNext(); el.textContent = n ? d3.utcFormat('%b %-d')(new Date(n.date + 'T00:00:00Z')) : (dash.data('upcoming').status === 'ok' ? 'None booked' : '—'); if (n) el.setAttribute('data-where', 'show_id=' + encodeURIComponent(n.show_id)); });

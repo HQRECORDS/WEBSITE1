@@ -132,10 +132,10 @@ window.jmShowPage = showPage;
   const from = document.getElementById('ov-from'), to = document.getElementById('ov-to');
   const iso = (d) => d.toISOString().slice(0, 10); const today = iso(new Date());
   const P = dash.params ? dash.params() : {};
-  from.min = today; to.min = today;
-  from.value = P.ovFrom || today; to.value = P.ovTo || iso(new Date(Date.now() + 30 * 864e5));
+  // Any From date is allowed; dates already behind us have no forecast, so the forecast counts shows from today on.
+  from.value = P.ovFrom || today; to.value = P.ovTo || iso(new Date(Date.now() + 30 * 864e5)); to.min = from.value;
   const apply = () => {
-    if (!from.value) from.value = today; if (from.value < today) from.value = today;
+    if (!from.value) from.value = today;
     if (!to.value || to.value < from.value) to.value = from.value;
     to.min = from.value;
     dash.setParams({ ovFrom: from.value, ovTo: to.value });
