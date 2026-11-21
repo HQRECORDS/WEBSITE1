@@ -20,7 +20,7 @@ S.stockLoc = 'web'; S.stockGroup = 'all'; S.stockSort = 'urgent'; S.grain = 'mon
 const ROAD = ['road-multiples', 'road-grid', 'road-range-cap', 'road-modal'];
 const TREND = ['trend-chart', 'trend-range', 'trend-total'];
 const OVP = ['ov-short', 'ov-end', 'ov-cards', 'ov-period-cap'];
-const redrawFor = { evRange: ['ev-table', 'ev-total'], ovRange: () => { applyPanels(); OVP.forEach((n) => dash.draw(n)); }, tsRange: ['ts-end', 'ts-k-short', 'ts-k-units', 'ts-k-tight', 'ts-k-ok', 'ts-list', 'ts-pack'], sizeGroup: ['sizes-table', 'sizes-takeaway'], sizeShow: ['sizes-table'], profitRange: ['profit-kpis', 'profit-chart', 'profit-takeaway'], profitCh: ['profit-kpis', 'profit-chart', 'profit-takeaway'], geoLevel: ['geo-chart', 'geo-takeaway'], geoMeasure: ['geo-chart', 'geo-takeaway'], geoRange: ['geo-chart', 'geo-takeaway'], roadView: ROAD, stockLoc: ['stock-list'], stockGroup: ['stock-list'], phView: ['ph-region', 'ph-shows', 'ph-items'], grain: TREND, metric: TREND,
+const redrawFor = { evRange: ['ev-table', 'ev-total'], ovRange: () => { applyPanels(); OVP.forEach((n) => dash.draw(n)); }, tsRange: ['ts-end', 'ts-k-short', 'ts-k-units', 'ts-k-tight', 'ts-k-ok', 'ts-list', 'ts-pack'], sizeGroup: ['sizes-table', 'sizes-takeaway'], sizeShow: ['sizes-table'], profitRange: () => { applyPanels(); ['profit-kpis', 'profit-chart', 'profit-takeaway'].forEach((n) => dash.draw(n)); }, profitCh: ['profit-kpis', 'profit-chart', 'profit-takeaway'], geoLevel: ['geo-chart', 'geo-takeaway'], geoMeasure: ['geo-chart', 'geo-takeaway'], geoRange: ['geo-chart', 'geo-takeaway'], roadView: ROAD, stockLoc: ['stock-list'], stockGroup: ['stock-list'], phView: ['ph-region', 'ph-shows', 'ph-items'], grain: TREND, metric: TREND,
   trendRange: () => { S.trendFrom = null; S.trendTo = null; TREND.forEach((n) => dash.draw(n)); } };
 const applyPanels = () => {
   document.querySelectorAll('#road-chart-panel').forEach((p) => { p.hidden = S.roadView !== 'chart'; });
@@ -30,6 +30,7 @@ const applyPanels = () => {
   document.querySelectorAll('#ph-item-panel').forEach((p) => { p.hidden = S.phView !== 'item'; });
   document.querySelectorAll('#ph-sort-field').forEach((p) => { p.hidden = S.phView !== 'region'; });
   document.querySelectorAll('#ov-custom').forEach((p) => { p.hidden = S.ovRange !== 'custom'; });
+  document.querySelectorAll('#profit-custom').forEach((p) => { p.hidden = S.profitRange !== 'custom'; });
 };
 document.querySelectorAll('.jm-seg[data-group]').forEach((seg) => {
   const group = seg.getAttribute('data-group');
@@ -141,4 +142,23 @@ window.jmShowPage = showPage;
   };
   from.addEventListener('change', apply); to.addEventListener('change', apply);
   if (!P.ovFrom) dash.setParams({ ovFrom: from.value, ovTo: to.value });
+})();
+
+// By product custom date range: two date pickers feed the profit calc through dash params (past dates, up to today).
+(function () {
+  const box = document.getElementById('profit-custom'); if (!box) return;
+  const from = document.getElementById('profit-from'), to = document.getElementById('profit-to');
+  const iso = (d) => d.toISOString().slice(0, 10); const today = iso(new Date());
+  const P = dash.params ? dash.params() : {};
+  from.max = today; to.max = today;
+  from.value = P.pFrom || iso(new Date(Date.now() - 30 * 864e5)); to.value = P.pTo || today;
+  const apply = () => {
+    if (!to.value || to.value > today) to.value = today;
+    if (!from.value) from.value = iso(new Date(Date.now() - 30 * 864e5));
+    if (from.value > to.value) from.value = to.value;
+    from.max = to.value;
+    dash.setParams({ pFrom: from.value, pTo: to.value });
+  };
+  from.addEventListener('change', apply); to.addEventListener('change', apply);
+  from.max = to.value;
 })();

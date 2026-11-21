@@ -71,7 +71,7 @@ dash.calc('venue_terms', { title: 'Venue merch cut by show', description: 'Each 
   return { show_id: s.id, show: s.show, date: s.date, terms: raw, soft_pct: Math.round(soft * 1000) / 10, recorded_pct: Math.round(rec * 1000) / 10, basis };
 }) });
 
-dash.calc('profit', { title: 'Profit by product', description: 'Sales, sales tax backed out of tax-inclusive show sales (GST/HST by the show’s province), cost of goods, venue cuts (recorded, or from the show’s Merch Terms), Shopify card fees and profit per product and for all products, for four date ranges and three channel views. Profit = sales − tax − cost of goods − venue cuts − card fees. Cost of goods uses the recorded cost on a sale when there is one, otherwise units × the product’s unit cost. Sales of products with no unit cost are counted separately and left out of profit.', inputs: ['sales', 'products', 'shows', 'venue_terms'], fn: (sales, products, shows, venue_terms) => {
+dash.calc('profit', { title: 'Profit by product', description: 'Sales, sales tax backed out of tax-inclusive show sales (GST/HST by the show’s province), cost of goods, venue cuts (recorded, or from the show’s Merch Terms), Shopify card fees and profit per product and for all products, for five date ranges (the custom range comes from the By product date pickers) and three channel views. Profit = sales − tax − cost of goods − venue cuts − card fees. Cost of goods uses the recorded cost on a sale when there is one, otherwise units × the product’s unit cost. Sales of products with no unit cost are counted separately and left out of profit.', inputs: ['sales', 'products', 'shows', 'venue_terms'], fn: (sales, products, shows, venue_terms) => {
   const prod = new Map(products.map((p) => [p.id, p]));
   // Venue cut: recorded on the sale (spreadsheet years), otherwise worked out from the show's Merch Terms on sales before tax.
   // Card fees: Shopify Payments standard rates on Shopify sales: 2.6% in person (Basic plan, Canada), 2.9% online (per-order 30¢ not included).
@@ -87,7 +87,10 @@ dash.calc('profit', { title: 'Profit by product', description: 'Sales, sales tax
     return s.gross_cad * r / (1 + r); };
   const day = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
   const year = new Date().toISOString().slice(0, 4);
-  const ranges = { d30: (d) => d >= day(30), m12: (d) => d >= day(365), ytd: (d) => d.slice(0, 4) === year, all: () => true };
+  // Custom range: the By product date pickers (dash.params pFrom / pTo); defaults to the last 30 days.
+  const P = (dash.params && dash.params()) || {}; const okDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  let pFrom = okDate(P.pFrom) ? P.pFrom : day(30), pTo = okDate(P.pTo) ? P.pTo : day(0); if (pTo < pFrom) pTo = pFrom;
+  const ranges = { d30: (d) => d >= day(30), m12: (d) => d >= day(365), ytd: (d) => d.slice(0, 4) === year, all: () => true, custom: (d) => d >= pFrom && d <= pTo };
   const chans = { all: () => true, shows: (c) => c === 'Show POS', web: (c) => c === 'Web' };
   const r2 = (v) => Math.round(v * 100) / 100;
   const g = new Map();
